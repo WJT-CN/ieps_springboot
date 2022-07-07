@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wjt.ieps.mapper.UserMapper">
+
+    <resultMap id="userMap" type="com.wjt.ieps.entity.User">
+        <id column="uid" property="id"/>
+        <result column="username" property="username"/>
+
+        <collection property="roles" javaType="list" ofType="com.wjt.ieps.entity.Role">
+            <id column="rid" property="roleId"/>
+            <result column="role_name" property="roleName"/>
+        </collection>
+    </resultMap>
+    <select id="findRolesByUsername" parameterType="String" resultMap="userMap">
+        SELECT u.id uid,username,r.role_id rid,role_name FROM ieps_user u LEFT JOIN ieps_user_role ur ON u.id = ur.user_id
+        LEFT JOIN ieps_role r ON ur.role_id = r.role_id
+        WHERE username = #{username}
+    </select>
+
+
+    <select id="findPermsByRoleId" parameterType="Integer" resultType="com.wjt.ieps.entity.Permission">
+        SELECT p.perm_id,p.perm_name,p.url,r.role_name FROM ieps_role r LEFT JOIN ieps_role_perm rp ON r.role_id = rp.role_id
+	    LEFT JOIN ieps_permission p ON rp.perm_id = p.perm_id
+	    WHERE r.role_id = #{roleId}
+    </select>
+
+</mapper>
